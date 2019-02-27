@@ -7,13 +7,15 @@ module.exports = {
   createUser: async function ({ userInput }, req) {
     const errors = []
     if(!validator.isEmail(userInput.email)) {
-      errors.push({massage: 'E-Mail is invalid.'})
+      errors.push({message: 'E-Mail is invalid.'})
     }
     if(validator.isEmpty(userInput.password) || !validator.isLength(userInput.password, {min: 5 })) {
-      errors.push({massage: 'Password to short!'})
+      errors.push({message: 'Password to short!'})
     }
     if(errors.length > 0) {
       const error = new Error('Invalid input.');
+      error.data = errors;
+      error.code = 442;
       throw error;
     }
     const existingUser = await User.findOne({email: userInput.email})

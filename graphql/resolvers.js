@@ -17,7 +17,7 @@ module.exports = {
     if(errors.length > 0) {
       const error = new Error('Invalid input.');
       error.data = errors;
-      error.code = 442;
+      error.code = 422;
       throw error;
     }
     const existingUser = await User.findOne({email: userInput.email})
@@ -56,7 +56,7 @@ module.exports = {
         userId: user._id.toString(),
         email: user.email
       }, 
-      'supersecretsecretsecret',
+      'somesupersecretsecret',
       { expiresIn: '1h' }
     )
     return {
@@ -65,6 +65,11 @@ module.exports = {
     }
   },
   createPost: async function({postInput}, req) {
+    if(!req.isAuth) {
+      const error = new Error('Not authenticated!')
+      error.code = 401
+      throw error
+    }
     const errors = []
     if(validator.isEmpty(postInput.title) || !validator.isLength(postInput.title, {min: 5})) {
       errors.push({message: 'Title is invalid'})
@@ -75,16 +80,24 @@ module.exports = {
     if(errors.length > 0) {
       const error = new Error('Invalid input.');
       error.data = errors;
-      error.code = 442;
+      error.code = 422;
+      throw error;
+    }
+    const user = await User.findById(req.userId)
+    if(!user) {
+      const error = new Error('Invalid user.');
+      error.code = 401;
       throw error;
     }
     const post = new Post({
       title: postInput.title,
       content: postInput.content,
-      imageUrl: postInput.imageUrl
+      imageUrl: postInput.imageUrl,
+      creator: user
     })
 
     const createdPost = await post.save()
+    user.posts.push(createdPost)
     return {
       ...createdPost._doc,
       _id: createdPost._id.toString(),

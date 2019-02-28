@@ -1,5 +1,4 @@
 const path = require('path');
-const fs = require('fs')
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -10,6 +9,7 @@ const graphqlHttp = require('express-graphql')
 const graphqlSchema = require('./graphql/schema')
 const graphqlResolver = require('./graphql/resolvers')
 const auth = require('./middleware/auth')
+const { clearImage } = require('./util/file')
 
 const MONGODB_URI = 'mongodb+srv://may:9tvmwpZzSvt5hgKv@cluster0-rnstb.mongodb.net/graphql?retryWrites=true'
 
@@ -111,8 +111,3 @@ mongoose
     app.listen(8080);
   })
   .catch(err => console.log(err));
-
-const clearImage = filePath => {
-  filePath = path.join(__dirname, '..', filePath);
-  fs.unlink(filePath, err => console.log(err));
-};

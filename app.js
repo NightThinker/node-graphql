@@ -59,17 +59,19 @@ app.use((req, res, next) => {
 app.use(auth);
 
 app.put('/post-image', (req, res, next) => {
-	console.log('TCL: req', req.body)
+	// console.log('TCL: req', req.body)
   if(!req.isAuth) {
     throw new Error('Not authenticated!')
   }
   if(!req.file) {
     return res.status(200).json({message: 'No flie provided!'})
   }
-  if(req.body.oldPath) {
-    clearImage(req.body.oldPath)
+  if (req.body.oldPath) {
+    clearImage(req.body.oldPath);
   }
-  return res.status(201).json({ message: 'File Store', filePath: req.file.path});
+  return res
+    .status(201)
+    .json({ message: 'File stored.', filePath: req.file.path });
 })
 
 
@@ -94,7 +96,7 @@ app.use('/graphql', graphqlHttp({
 
 
 app.use((error, req, res, next) => {
-  console.log(error);
+  // console.log(error);
   const status = error.statusCode || 500;
   const message = error.message;
   const data = error.data;

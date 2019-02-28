@@ -59,11 +59,12 @@ app.use((req, res, next) => {
 app.use(auth);
 
 app.put('/post-image', (req, res, next) => {
-  if(!isAuth) {
+	console.log('TCL: req', req.body)
+  if(!req.isAuth) {
     throw new Error('Not authenticated!')
   }
   if(!req.file) {
-    return res.status(200).json({message: 'Noo flie provided!'})
+    return res.status(200).json({message: 'No flie provided!'})
   }
   if(req.body.oldPath) {
     clearImage(req.body.oldPath)
